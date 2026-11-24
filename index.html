@@ -295,8 +295,9 @@ main{padding-top:4px}
 .ptable td.c-name{padding-left:16px}
 .az{display:grid;gap:4px}
 .az-l{display:block;font-size:10.5px;letter-spacing:.5px;color:var(--muted);font-weight:var(--w-head);margin-bottom:1px}
-.pill{display:inline-block;text-align:center;line-height:1.25;padding:4px 12px;border-radius:14px;background:var(--chip);font-size:16.5px;font-weight:var(--w-head);letter-spacing:.3px;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;white-space:nowrap;line-height:1.25;padding:4px 11px;border-radius:999px;background:var(--chip);font-size:16px;font-weight:var(--w-head);letter-spacing:.3px;font-variant-numeric:tabular-nums}
 .nw{white-space:nowrap}
+.pill.ok{background:var(--verde);color:#fff}
 .pill.soon{background:var(--arancio);color:#fff}
 .pill.warn{background:var(--rosso);color:#fff}
 .pill.late{background:var(--rosso-soft);color:var(--rosso)}
@@ -696,7 +697,7 @@ body:not(.booting) .boot{display:none}
       <div class="field"><span class="lbl">Dal · Al (vuoto = tutte le date)</span>
         <div class="range"><input class="input" type="date" id="ex-from" aria-label="Dal"><input class="input" type="date" id="ex-to" aria-label="Al"></div></div>
       <div class="field full"><span class="lbl">Altro</span>
-        <div class="seg"><button type="button" class="chip" id="ex-urgent" aria-pressed="false">Solo urgenti (aperti da più di 7 giorni)</button></div></div>
+        <div class="seg"><button type="button" class="chip" id="ex-urgent" aria-pressed="false">Solo urgenti (aperti da più di 14 giorni)</button></div></div>
       <div class="dlg-msg" id="ex-msg"></div>
     </div>
     <div class="dlg-foot">
@@ -797,8 +798,8 @@ body:not(.booting) .boot{display:none}
   };
   // Come nella Martur Dashboard: il nome utente diventa un'email interna.
   const AUTH_EMAIL_DOMAIN = '@marturproblemi-users.local';
-  const SOON_DAYS = 5;      // dal 5° giorno: arancione (in scadenza)
-  const URGENT_DAYS = 7;    // oltre il 7° giorno: rosso (urgente)
+  const SOON_DAYS = 8;      // dopo 7 giorni: arancione
+  const URGENT_DAYS = 14;   // dopo 14 giorni: rosso (urgente)
   const LOG_PAGE = 30;
   const CDN = {
     jspdf: 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
@@ -1112,8 +1113,8 @@ body:not(.booting) .boot{display:none}
     let ap, ch;
     if (which === 'open') {
       // data e giorni in una pillola, colorata quando è in scadenza o urgente
-      const tip = urgent ? 'Aperto da più di ' + URGENT_DAYS + ' giorni: urgente' : soon ? 'In scadenza: diventa urgente dopo il ' + URGENT_DAYS + '° giorno' : 'Aperto da ' + days;
-      ap = '<span class="pill' + (urgent ? ' warn' : soon ? ' soon' : '') + '" title="' + tip + '">' + '<span class="nw">' + (urgent ? '⚠ ' : '') + fmt(it.apertura) + '</span> · <span class="nw">' + days + '</span></span>';
+      const tip = urgent ? 'Aperto da più di ' + URGENT_DAYS + ' giorni' : soon ? 'Aperto da più di 7 giorni' : 'Aperto da ' + days;
+      ap = '<span class="pill' + (urgent ? ' warn' : soon ? ' soon' : ' ok') + '" title="' + tip + '">' + '<span class="nw">' + fmt(it.apertura) + '</span> · <span class="nw">' + days + '</span></span>';
       ch = '<button type="button" class="chk-btn" data-act="close" data-id="' + it.id + '" title="Chiudi e sposta nello storico" aria-label="Chiudi">' + svg(ICON.check) + '</button>';
     } else {
       ap = '<span class="date">' + fmt(it.apertura) + '</span>';
