@@ -203,6 +203,11 @@ select.input{appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmln
 .user-row{display:flex;align-items:center;gap:8px;padding:9px 12px;border-top:1px solid var(--line)}
 .user-row:first-child{border-top:0}
 .user-row .nm{flex:1;min-width:0;font-weight:var(--w-head)}
+.ua-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.role-tag{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:999px;background:var(--chip);font-size:11px;letter-spacing:.4px;vertical-align:1px}
+.role-tag.admin{background:var(--gold-soft-2);color:var(--gold)}
+.role-sel{height:32px;width:auto;font-size:13px;padding:0 30px 0 10px;border-radius:10px}
+@media (max-width:1180px){.ua-grid{grid-template-columns:1fr}}
 .user-row .nm small{display:block;font-size:11.5px;color:var(--muted);font-weight:var(--w-text);letter-spacing:.4px}
 
 /* ---------- LOGIN (come Martur Dashboard) ---------- */
@@ -338,7 +343,7 @@ body.booting .login{display:none}
           <svg class="i" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </button>
         <div class="menu" id="user-menu" role="menu" hidden>
-          <div class="who">Accesso come<b id="who"></b></div>
+          <div class="who">Accesso come<b id="who"></b><span id="who-role"></span></div>
           <button type="button" role="menuitem" id="btn-users"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Utenti</button>
           <button type="button" role="menuitem" id="btn-pass"><svg class="i" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Cambia password</button>
           <button type="button" role="menuitem" id="btn-logout"><svg class="i" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg>Esci</button>
@@ -498,14 +503,15 @@ body.booting .login{display:none}
 <!-- Utenti -->
 <dialog class="dlg" id="dlg-users">
   <div class="shell">
-    <div class="dlg-head">Utenti<small>Chi ha l'accesso alla dashboard</small></div>
+    <div class="dlg-head">Utenti<small>Amministratore: tutto + utenti e registro · Utente: gestisce i problemi</small></div>
     <div class="dlg-body">
       <div class="users" id="users-list"></div>
       <form class="field full" id="user-add" novalidate style="gap:10px">
         <span class="lbl">Aggiungi utente</span>
-        <div class="range">
+        <div class="ua-grid">
           <input class="input lc" id="ua-name" placeholder="nome.cognome" autocomplete="off" autocapitalize="none" spellcheck="false">
           <input class="input lc" id="ua-pass" type="text" placeholder="Password (min. 6 caratteri)" autocomplete="new-password">
+          <select class="input" id="ua-role" aria-label="Ruolo"><option value="user">Utente</option><option value="admin">Amministratore</option></select>
         </div>
         <button type="submit" class="btn btn-primary" id="ua-go">Aggiungi utente</button>
       </form>
@@ -636,8 +642,9 @@ body.booting .login{display:none}
     close: ['ha chiuso', 'close'],
     'delete': ['ha eliminato il problema', 'delete'], 'note.del': ['ha eliminato un aggiornamento da', 'delete'],
     'export': ['ha esportato', 'exports'],
-    'user.add': ['ha aggiunto l\'utente', 'users'], 'user.reset': ['ha reimpostato la password di', 'users'], 'user.remove': ['ha tolto l\'accesso a', 'users']
+    'user.add': ['ha aggiunto l\'utente', 'users'], 'user.reset': ['ha reimpostato la password di', 'users'], 'user.remove': ['ha tolto l\'accesso a', 'users'], 'user.role': ['ha cambiato il ruolo di', 'users']
   };
+  const ROLE_LABEL = { admin: 'Amministratore', user: 'Utente' };
   const AUDIT_GROUPS = { access: 'Accessi', data: 'Inserimenti e modifiche', close: 'Chiusure', 'delete': 'Eliminazioni', exports: 'Esportazioni', users: 'Utenti' };
 
   /* ======================= UTIL ======================= */
@@ -672,9 +679,11 @@ body.booting .login{display:none}
 
   /* ======================= STATO ======================= */
   const VIEW_KEY = 'martur-problemi-vista';
+  const isAdmin = () => state.role === 'admin';
+  const visibleViews = () => VIEWS.filter((v) => v.id !== 'log' || isAdmin());
   function loadView() { try { const v = localStorage.getItem(VIEW_KEY); if (VIEWS.some((x) => x.id === v)) return v; } catch (e) {} return 'all'; }
   const state = {
-    user: null, username: '', items: [], view: loadView(),
+    user: null, username: '', role: 'user', items: [], view: loadView(),
     filters: { q: '', prios: new Set(['rosso', 'giallo', 'verde']), resp: '' },
     sort: { open: { key: 'prio', dir: -1 }, closed: { key: 'chiusura', dir: -1 } },
     log: { rows: [], last: null, more: false, user: '', group: '', q: '', loaded: false }
@@ -738,16 +747,24 @@ body.booting .login{display:none}
     // utente abilitato = ha il documento in users/{uid}
     const ref = db.collection('users').doc(user.uid);
     const doc = await ref.get();
-    if (doc.exists) return doc.data().username || emailToUsername(user.email);
-    // Primo avvio: il primo che entra diventa il primo utente (poi gli altri si aggiungono da "Utenti")
+    if (doc.exists) {
+      const d = doc.data(), username = d.username || emailToUsername(user.email);
+      if (d.role === 'admin' || d.role === 'user') return { username: username, role: d.role };
+      // documento senza ruolo (versione precedente): chi ha fatto il primo avvio diventa Amministratore
+      const setup = await db.collection('config').doc('setup').get();
+      const role = setup.exists && setup.data().owner === user.uid ? 'admin' : 'user';
+      try { await ref.update({ role: role }); } catch (e) {}
+      return { username: username, role: role };
+    }
+    // Primo avvio: il primo che entra diventa Amministratore (poi gli altri si aggiungono da "Utenti")
     const setup = await db.collection('config').doc('setup').get();
     if (setup.exists) return null;
     const username = emailToUsername(user.email);
     const b = db.batch();
-    b.set(ref, { username: username, createdAt: TS(), createdBy: username });
+    b.set(ref, { username: username, role: 'admin', createdAt: TS(), createdBy: username });
     b.set(db.collection('config').doc('setup'), { owner: user.uid, createdAt: TS() });
     await b.commit();
-    return username;
+    return { username: username, role: 'admin' };
   }
 
   if (auth) auth.onAuthStateChanged(async (user) => {
@@ -756,15 +773,18 @@ body.booting .login{display:none}
       state.user = null; state.username = ''; state.items = []; state.log = Object.assign(state.log, { rows: [], last: null, loaded: false });
       setLocked(true); return;
     }
-    let username = null;
-    try { username = await resolveMember(user); } catch (err) { console.error(err); }
-    if (!username) {
+    let member = null;
+    try { member = await resolveMember(user); } catch (err) { console.error(err); }
+    if (!member) {
       justLoggedIn = false;
       loginErr.textContent = 'Questo utente non è abilitato alla dashboard';
       auth.signOut(); return;
     }
-    state.user = user; state.username = username;
-    $('#who').textContent = username;
+    state.user = user; state.username = member.username; state.role = member.role;
+    $('#who').textContent = member.username;
+    $('#who-role').innerHTML = '<span class="role-tag' + (isAdmin() ? ' admin' : '') + '">' + ROLE_LABEL[state.role] + '</span>';
+    $('#btn-users').hidden = !isAdmin();
+    if (state.view === 'log' && !isAdmin()) state.view = 'all';
     setLocked(false);
     if (justLoggedIn) { justLoggedIn = false; logAudit('login'); }
     unsubProblems = db.collection('problems').onSnapshot((snap) => {
@@ -811,8 +831,8 @@ body.booting .login{display:none}
     return '<span class="nav-badge' + (c.hot ? ' hot' : (c.soon ? ' warn' : '')) + '" title="' + title + '">' + c.open + '</span>';
   }
   function renderNav() {
-    $('#main-nav').innerHTML = VIEWS.map((v) => '<button type="button" class="nav-tab" data-view="' + v.id + '" aria-pressed="' + (v.id === state.view) + '"><span>' + esc(v.label) + '</span>' + badge(v.id) + '</button>').join('');
-    $('#tabbar').innerHTML = VIEWS.map((v) => '<button type="button" data-view="' + v.id + '" aria-pressed="' + (v.id === state.view) + '">' + svg(v.icon) + '<span>' + esc(v.short) + '</span>' + badge(v.id) + '</button>').join('');
+    $('#main-nav').innerHTML = visibleViews().map((v) => '<button type="button" class="nav-tab" data-view="' + v.id + '" aria-pressed="' + (v.id === state.view) + '"><span>' + esc(v.label) + '</span>' + badge(v.id) + '</button>').join('');
+    $('#tabbar').innerHTML = visibleViews().map((v) => '<button type="button" data-view="' + v.id + '" aria-pressed="' + (v.id === state.view) + '">' + svg(v.icon) + '<span>' + esc(v.short) + '</span>' + badge(v.id) + '</button>').join('');
   }
 
   function cols() { return COLS.filter((c) => !c.allOnly || state.view === 'all'); }
@@ -878,6 +898,7 @@ body.booting .login{display:none}
 
   function render() {
     if (!state.user) return;
+    if (state.view === 'log' && !isAdmin()) state.view = 'all';
     const isLog = state.view === 'log';
     $('#view-problems').hidden = isLog;
     $('#view-log').hidden = !isLog;
@@ -1110,7 +1131,7 @@ body.booting .login{display:none}
   });
 
   function setView(id) {
-    if (!VIEWS.some((v) => v.id === id)) return;
+    if (!visibleViews().some((v) => v.id === id)) return;
     state.view = id;
     try { localStorage.setItem(VIEW_KEY, id); } catch (e) {}
     if (id === 'log') state.log.loaded = false; // ricarica il registro ogni volta che si apre
@@ -1187,15 +1208,29 @@ body.booting .login{display:none}
       const rows = snap.docs.map((d) => Object.assign({ id: d.id }, d.data())).sort((a, b) => String(a.username).localeCompare(String(b.username)));
       const f = new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric' });
       box.innerHTML = rows.map((r) => '<div class="user-row"><span class="nm">' + esc(r.username) + (r.id === state.user.uid ? ' (tu)' : '') +
+        (r.id === state.user.uid ? '<span class="role-tag' + (r.role === 'admin' ? ' admin' : '') + '">' + esc(ROLE_LABEL[r.role] || 'Utente') + '</span>' : '') +
         '<small>' + (r.createdBy ? 'Aggiunto da ' + esc(r.createdBy) : '') + (r.createdAt && r.createdAt.toDate ? ' · ' + esc(f.format(r.createdAt.toDate())) : '') + '</small></span>' +
-        (r.id === state.user.uid ? '' : '<button type="button" class="btn btn-line btn-sm" data-reset="' + esc(r.id) + '" data-name="' + esc(r.username) + '">' + svg(ICON.key) + 'Password</button>' +
+        (r.id === state.user.uid ? '' : '<select class="input role-sel" data-role-uid="' + esc(r.id) + '" data-name="' + esc(r.username) + '" aria-label="Ruolo">' +
+          ['user', 'admin'].map((k) => '<option value="' + k + '"' + ((r.role || 'user') === k ? ' selected' : '') + '>' + ROLE_LABEL[k] + '</option>').join('') + '</select>' +
+          '<button type="button" class="btn btn-line btn-sm" data-reset="' + esc(r.id) + '" data-name="' + esc(r.username) + '">' + svg(ICON.key) + 'Password</button>' +
           '<button type="button" class="icon-btn danger" data-remove="' + esc(r.id) + '" data-name="' + esc(r.username) + '" title="Togli accesso">' + svg(ICON.trash) + '</button>') + '</div>').join('');
     } catch (ex) { box.innerHTML = '<div class="note-empty" style="color:var(--rosso)">Impossibile caricare gli utenti</div>'; }
   }
-  $('#btn-users').addEventListener('click', () => { umenu.hidden = true; $('#users-msg').textContent = ''; $('#ua-name').value = ''; $('#ua-pass').value = ''; dUsers.showModal(); loadUsers(); });
+  $('#users-list').addEventListener('change', async (e) => {
+    const sel = e.target.closest('[data-role-uid]'); if (!sel) return;
+    const role = sel.value, from = role === 'admin' ? 'user' : 'admin';
+    sel.disabled = true;
+    try {
+      await db.collection('users').doc(sel.dataset.roleUid).update({ role: role, roleBy: state.username, roleAt: TS() });
+      logAudit('user.role', sel.dataset.name, [{ field: 'Ruolo', from: ROLE_LABEL[from].toUpperCase(), to: ROLE_LABEL[role].toUpperCase() }]);
+      toast(sel.dataset.name + ': ' + ROLE_LABEL[role]);
+    } catch (ex) { sel.value = from; fail(ex, $('#users-msg')); }
+    finally { sel.disabled = false; }
+  });
+  $('#btn-users').addEventListener('click', () => { if (!isAdmin()) return; umenu.hidden = true; $('#users-msg').textContent = ''; $('#ua-name').value = ''; $('#ua-pass').value = ''; $('#ua-role').value = 'user'; dUsers.showModal(); loadUsers(); });
   $('#user-add').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const name = usernameKey($('#ua-name').value), pass = $('#ua-pass').value, msg = $('#users-msg');
+    const name = usernameKey($('#ua-name').value), pass = $('#ua-pass').value, role = $('#ua-role').value === 'admin' ? 'admin' : 'user', msg = $('#users-msg');
     if (!name) { msg.textContent = 'Inserisci il nome utente (lettere, numeri, punto)'; return; }
     if (pass.length < 6) { msg.textContent = 'La password deve avere almeno 6 caratteri'; return; }
     const btn = $('#ua-go'); btn.disabled = true; msg.textContent = '';
@@ -1204,13 +1239,13 @@ body.booting .login{display:none}
       if (existing.docs.some((d) => usernameKey(d.data().username) === name)) { msg.textContent = 'Questo utente ha già l\'accesso'; return; }
       const acc = await createAccount(name, pass);
       const b = db.batch();
-      b.set(db.collection('users').doc(acc.uid), { username: name, createdAt: TS(), createdBy: state.username });
+      b.set(db.collection('users').doc(acc.uid), { username: name, role: role, createdAt: TS(), createdBy: state.username });
       if (acc.email !== usernameToEmail(name)) b.set(db.collection('loginAliases').doc(name), { email: acc.email });
       else b.delete(db.collection('loginAliases').doc(name));
       await b.commit();
-      logAudit('user.add', name);
+      logAudit('user.add', name, [{ field: 'Ruolo', from: null, to: ROLE_LABEL[role].toUpperCase() }]);
       $('#ua-name').value = ''; $('#ua-pass').value = '';
-      toast('Utente ' + name + ' aggiunto'); loadUsers();
+      toast(name + ' aggiunto come ' + ROLE_LABEL[role]); loadUsers();
     } catch (ex) { console.error(ex); msg.textContent = ex && ex.code === 'auth/weak-password' ? 'Password troppo debole' : 'Impossibile aggiungere l\'utente'; }
     finally { btn.disabled = false; }
   });
