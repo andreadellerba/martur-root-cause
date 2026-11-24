@@ -258,6 +258,7 @@ main{padding-top:4px}
 .block-head .bar{width:4px;height:16px;border-radius:2px;background:var(--on-bg-gold)}
 .block-head .gold{color:var(--on-bg-gold)}
 .block-head .n{margin-left:2px;min-width:22px;height:22px;padding:0 7px;border-radius:999px;background:var(--card);color:var(--ink);border:1px solid var(--line);font-size:12px;display:inline-flex;align-items:center;justify-content:center;letter-spacing:0}
+.hist-head{margin:26px 0 12px;text-align:center;font-size:26px;font-weight:var(--w-head);letter-spacing:1.2px;color:var(--on-bg)}
 .table-card{background:var(--card);border:1px solid var(--edge);border-radius:28px;box-shadow:var(--shadow);overflow:hidden}
 .table-scroll{overflow-x:auto}
 .ptable{width:100%;border-collapse:collapse;table-layout:fixed;min-width:1120px}
@@ -569,11 +570,10 @@ body:not(.booting) .boot{display:none}
 <div id="view-problems">
   <main id="main">
     <section class="block">
-      <div class="block-head"><span class="bar"></span><span class="gold js-sec"></span>•<span>Problemi riscontrati</span><span class="n" id="n-open">0</span></div>
       <div class="table-card"><div class="table-scroll"><table class="ptable" id="t-open"><colgroup></colgroup><thead></thead><tbody></tbody></table></div></div>
     </section>
     <section class="block">
-      <div class="block-head"><span class="bar"></span><span class="gold js-sec"></span>•<span>Storico</span><span class="n" id="n-closed">0</span></div>
+      <h2 class="hist-head">Storico</h2>
       <div class="table-card"><div class="table-scroll"><table class="ptable" id="t-closed"><colgroup></colgroup><thead></thead><tbody></tbody></table></div></div>
     </section>
   </main>
@@ -862,9 +862,9 @@ body:not(.booting) .boot{display:none}
     { key: 'nome', label: 'Problema', cls: 'c-name', w: [19, 17] },
     { key: 'dove', label: 'Dove', cls: 'c-dove', w: [12, 11] },
     { key: 'responsabile', label: 'Resp.', cls: 'c-resp', w: [10, 9] },
-    { key: 'azioneImmediata', label: 'Azioni (immediata - correttiva)', cls: 'c-az', w: [32, 30] },
+    { key: 'azioneImmediata', label: 'Azioni (immediata - correttiva)', cls: 'c-az', w: [30, 28] },
     { key: 'apertura', label: 'Apertura', cls: 'c-date ap', w: [13, 13] },
-    { key: 'chiusura', label: 'Chiusura', cls: 'c-date', w: [10, 9] }
+    { key: 'chiusura', label: 'Chiusura', cls: 'c-date', w: [12, 11] }
   ];
   const ACT_W = [4, 3.5];
   const AUDIT = {
@@ -1085,7 +1085,7 @@ body:not(.booting) .boot{display:none}
     const c = countsFor(id);
     if (!c.open) return '<span class="nav-badge zero" title="Nessun problema aperto">0</span>';   // sempre presente: la voce non cambia larghezza
     const title = c.open + ' aperti' + (c.hot ? ', ' + c.hot + ' urgenti' : '') + (c.soon ? ', ' + c.soon + ' in scadenza' : '');
-    return '<span class="nav-badge' + (c.hot ? ' hot' : (c.soon ? ' warn' : '')) + '" title="' + title + '">' + c.open + '</span>';
+    return '<span class="nav-badge' + ' hot' + '" title="' + title + '">' + c.open + '</span>';
   }
   // Il Registro non sta nel menu: si apre da Impostazioni, come nella dashboard
   function renderNav() {
@@ -1118,7 +1118,7 @@ body:not(.booting) .boot{display:none}
       ch = '<button type="button" class="chk-btn" data-act="close" data-id="' + it.id + '" title="Chiudi e sposta nello storico" aria-label="Chiudi">' + svg(ICON.check) + '</button>';
     } else {
       ap = '<span class="date">' + fmt(it.apertura) + '</span>';
-      ch = '<span class="pill' + (n > URGENT_DAYS ? ' late' : '') + '" title="Chiuso in ' + n + ' giorni"><span class="nw">' + fmt(it.chiusura) + '</span> · <span class="nw">in ' + n + ' gg</span></span>';
+      ch = '<span class="pill' + (n > URGENT_DAYS ? ' late' : '') + '" title="Chiuso in ' + n + ' giorni"><span class="nw">' + fmt(it.chiusura) + '</span> · <span class="nw">' + n + ' gg</span></span>';
     }
     const nn = (it.notes || []).length;
     const notes = nn ? '<button type="button" class="ncount" data-act="edit" data-id="' + it.id + '" title="' + nn + (nn === 1 ? ' aggiornamento' : ' aggiornamenti') + '">' + svg(ICON.note) + nn + '</button>' : '';
@@ -1144,7 +1144,7 @@ body:not(.booting) .boot{display:none}
     const span = cols().length + 1;
     tbl.tBodies[0].innerHTML = list.length ? sorted(list, which).map((it) => row(it, which)).join('')
       : '<tr class="empty"><td colspan="' + span + '">' + (base.length ? 'Nessun risultato con questi filtri' : (which === 'open' ? 'Nessun problema aperto' : 'Storico vuoto')) + '</td></tr>';
-    $('#n-' + which).textContent = filtersActive() ? list.length + ' / ' + base.length : base.length;
+    const nEl = $('#n-' + which); if (nEl) nEl.textContent = filtersActive() ? list.length + ' / ' + base.length : base.length;
   }
 
   // Tendina dei filtri nella barra in alto (priorità + responsabile), con le
@@ -1461,15 +1461,16 @@ body:not(.booting) .boot{display:none}
   $('#f-q').addEventListener('input', (e) => { state.filters.q = up(e.target.value).replace(/\s+/g, ' ').trim(); render(); });
   $('#f-clear').addEventListener('click', (e) => { e.preventDefault(); state.filters.q = ''; $('#f-q').value = ''; render(); $('#f-q').focus(); });
   fMenu.addEventListener('click', (e) => {
+    e.stopPropagation();   // il menu si ridisegna: senza questo il clic sembrerebbe "fuori" e lo chiuderebbe
     const b = e.target.closest('button'); if (!b) return;
     if (b.dataset.fprio) {
       const s = state.filters.prios, p = b.dataset.fprio;
       if (s.has(p)) { if (s.size > 1) s.delete(p); } else s.add(p);
     } else if (b.dataset.fresp !== undefined) {
       state.filters.resp = b.dataset.fresp;
-      setDrop(fMenu, fBtn, false);
+      // la tendina resta aperta: si chiude cliccando fuori
     } else if (b.hasAttribute('data-freset')) {
-      resetFilters(); setDrop(fMenu, fBtn, false);
+      resetFilters();
     }
     render();
   });
