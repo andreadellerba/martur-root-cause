@@ -192,6 +192,7 @@ body.locked .app{display:none !important}
 .nav-tab svg.i{stroke-width:2.3;filter:drop-shadow(0 1px 1px rgba(0,0,0,.16))}
 .nav-tab .chev{width:13px;height:13px;stroke-width:2.6}
 .nav-badge{min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--chip);color:var(--ink);font-size:12px;font-weight:var(--w-head);letter-spacing:0;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.nav-badge.zero{opacity:.6}
 .nav-tab[aria-pressed="true"] .nav-badge{background:var(--card);color:var(--gold)}
 .nav-badge.warn,.nav-tab[aria-pressed="true"] .nav-badge.warn{background:var(--arancio);color:#fff}
 .nav-badge.hot,.nav-tab[aria-pressed="true"] .nav-badge.hot{background:var(--rosso);color:#fff}
@@ -285,9 +286,9 @@ main{padding-top:4px}
 .age.warn{background:var(--rosso);color:#fff}
 .age.late{background:var(--rosso-soft);color:var(--rosso)}
 /* P3: priorità = barra a sinistra + leggera tinta della riga; S1 compatte; S3 linee leggere; S5 testi a sinistra */
-.ptable tbody tr.row td{background:color-mix(in srgb,var(--pc) 7%,transparent)}
+.ptable tbody tr.row td{background:color-mix(in srgb,var(--pc) 13%,transparent)}
 .ptable tbody tr.row td:first-child{box-shadow:inset 7px 0 0 var(--pc)}
-.ptable tbody tr.row:hover td{background:color-mix(in srgb,var(--pc) 12%,transparent)}
+.ptable tbody tr.row:hover td{background:color-mix(in srgb,var(--pc) 19%,transparent)}
 .ptable td.c-name,.ptable td.c-dove,.ptable td.c-resp,.ptable td.c-az{text-align:left}
 .ptable th.c-name,.ptable th.c-dove,.ptable th.c-resp,.ptable th.c-az{text-align:left;padding-left:14px}
 .az-sep{color:var(--gold);font-weight:var(--w-head);padding:0 2px}
@@ -458,10 +459,10 @@ body:not(.booting) .boot{display:none}
   .ptable,.ptable.all{min-width:0}
   .ptable colgroup,.ptable thead{display:none}
   .ptable,.ptable tbody{display:block}
-  .ptable tr.row{position:relative;display:grid;grid-template-columns:1fr 1fr;background:color-mix(in srgb,var(--pc) 6%,var(--card));border:1px solid var(--edge);border-left:7px solid var(--pc);border-radius:24px;box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
+  .ptable tr.row{position:relative;display:grid;grid-template-columns:1fr 1fr;background:color-mix(in srgb,var(--pc) 12%,var(--card));border:1px solid var(--edge);border-left:7px solid var(--pc);border-radius:24px;box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
   .ptable tr.row td{display:block;width:auto;border:0;padding:7px 14px;font-size:17px;text-align:left;background:transparent !important;box-shadow:none !important}
   .ptable tr.row td::before{content:attr(data-label);display:block;font-size:11px;letter-spacing:.6px;color:var(--muted);font-weight:var(--w-head);margin-bottom:1px}
-  .ptable tr.row td.c-name{grid-column:1/-1;background:color-mix(in srgb,var(--pc) 10%,var(--band)) !important;padding:12px 48px 11px;font-size:19px;text-align:center;font-weight:var(--w-head)}
+  .ptable tr.row td.c-name{grid-column:1/-1;background:color-mix(in srgb,var(--pc) 20%,var(--band)) !important;padding:12px 48px 11px;font-size:19px;text-align:center;font-weight:var(--w-head)}
   .ptable tr.row td.c-name::before{display:none}
   .m-dot{display:inline-block;margin-right:8px;vertical-align:-1px}
   .ptable tr.row td.c-az{grid-column:1/-1}
@@ -522,6 +523,7 @@ body:not(.booting) .boot{display:none}
     <nav class="main-nav" id="main-nav" aria-label="Sezioni"></nav>
     <div class="fbar">
       <label class="fsearch"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input id="f-q" placeholder="Cerca…" autocomplete="off" aria-label="Cerca problema, luogo, responsabile"><button type="button" class="fclear" id="f-clear" title="Cancella" hidden><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button></label>
+      <button type="button" class="nav-tab icon" data-export="pdf" title="Esporta (PDF o Excel, con filtri per priorità e date)" aria-label="Esporta"><svg class="i" viewBox="0 0 24 24"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></button>
       <span class="drop">
         <button type="button" class="nav-tab icon" id="f-btn" title="Filtri" aria-haspopup="true" aria-expanded="false"><svg class="i" viewBox="0 0 24 24"><path d="M10 20a1 1 0 0 0 .553.895l2 1A1 1 0 0 0 14 21v-7a2 2 0 0 1 .517-1.341L21.74 4.67A1 1 0 0 0 21 3H3a1 1 0 0 0-.742 1.67l7.225 7.989A2 2 0 0 1 10 14z"/></svg><span class="nav-badge gold" id="f-count" hidden></span><svg class="i chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg></button>
         <div class="drop-menu" id="f-menu" role="menu" hidden></div>
@@ -548,7 +550,6 @@ body:not(.booting) .boot{display:none}
         <button type="button" class="am-item" role="menuitem" id="btn-log"><svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>Registro attività</button>
         <button type="button" class="am-item" role="menuitem" id="btn-users"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Utenti</button>
         <button type="button" class="am-item" role="menuitem" id="btn-pass"><svg class="i" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Cambia password</button>
-        <button type="button" class="am-item" role="menuitem" data-export="pdf" title="PDF o Excel, con filtri per priorità e date"><svg class="i" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg>Esporta</button>
         <button type="button" class="am-item" role="menuitem" id="btn-install" hidden><svg class="i" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><path d="m9 9 3 3 3-3"/><path d="M12 5v7"/></svg>Installa app</button>
         <button type="button" class="am-item" role="menuitem" id="btn-full"><svg class="i" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><span id="btn-full-txt">Schermo intero</span></button>
         <div class="am-div"></div>
@@ -1081,7 +1082,7 @@ body:not(.booting) .boot{display:none}
   function badge(id) {
     if (id === 'log') return '';
     const c = countsFor(id);
-    if (!c.open) return '';
+    if (!c.open) return '<span class="nav-badge zero" title="Nessun problema aperto">0</span>';   // sempre presente: la voce non cambia larghezza
     const title = c.open + ' aperti' + (c.hot ? ', ' + c.hot + ' urgenti' : '') + (c.soon ? ', ' + c.soon + ' in scadenza' : '');
     return '<span class="nav-badge' + (c.hot ? ' hot' : (c.soon ? ' warn' : '')) + '" title="' + title + '">' + c.open + '</span>';
   }
