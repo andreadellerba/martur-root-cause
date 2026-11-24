@@ -414,6 +414,14 @@ select.input{appearance:none;background:var(--field) url("data:image/svg+xml,%3C
 .notes-list{max-height:200px;overflow:auto}
 .note{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:8px 12px;border-top:1px solid var(--line);font-size:14.5px;font-weight:var(--w-text);text-transform:uppercase}
 .note small{grid-column:1;font-size:11.5px;color:var(--muted);letter-spacing:.4px;text-transform:none;font-weight:var(--w-ui)}
+.note small b{color:var(--ink);font-weight:var(--w-head)}
+.note-pop{position:fixed;z-index:70;width:min(420px,calc(100vw - 16px));max-height:70vh;overflow:hidden;background:var(--card);color:var(--ink);border:1px solid var(--edge);border-radius:14px;box-shadow:var(--pop-shadow);padding:6px 0;text-transform:uppercase;pointer-events:none}
+.np-head{padding:4px 14px 6px;font-size:12px;font-weight:var(--w-head);letter-spacing:.7px;color:var(--gold);border-bottom:1px solid var(--line)}
+.np-row{padding:8px 14px;display:grid;gap:2px}
+.np-row + .np-row{border-top:1px solid var(--line)}
+.np-date{font-size:13px;font-weight:var(--w-head);color:var(--gold);font-variant-numeric:tabular-nums;letter-spacing:.3px}
+.np-date span{color:var(--muted);font-weight:var(--w-text);text-transform:none}
+.np-text{font-size:16px;font-weight:var(--w-text);line-height:1.3}
 .note .icon-btn{grid-row:1/3;grid-column:2;width:30px;height:30px}
 .note-add{display:flex;gap:8px;padding:8px 12px 10px;border-top:1px solid var(--line)}
 .note-empty{padding:8px 12px 10px;color:var(--muted);font-size:13.5px;border-top:1px solid var(--line)}
@@ -1295,7 +1303,7 @@ body:not(.booting) .boot{display:none}
     const notes = (it.notes || []).slice().sort((a, b) => String(b.at).localeCompare(String(a.at)));
     const f = new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     $('#notes-list').innerHTML = notes.length ? notes.map((n) =>
-      '<div class="note"><span>' + esc(up(n.text)) + '</span><small>' + esc(n.by || '') + ' · ' + (n.at ? esc(f.format(new Date(n.at))) : '') + '</small>' +
+      '<div class="note"><span>' + esc(up(n.text)) + '</span><small><b>' + (n.at ? esc(f.format(new Date(n.at))) : '') + '</b>' + (n.by ? ' · ' + esc(n.by) : '') + '</small>' +
       '<button type="button" class="icon-btn danger" data-note-del="' + esc(n.id) + '" title="Elimina aggiornamento">' + svg(ICON.trash) + '</button></div>').join('')
       : '<div class="note-empty">Nessun aggiornamento</div>';
   }
@@ -1451,6 +1459,34 @@ body:not(.booting) .boot{display:none}
   document.addEventListener('click', (e) => { if (!rowMenu.hidden && !rowMenu.contains(e.target)) closeRowMenu(); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeRowMenu(); });
   window.addEventListener('scroll', closeRowMenu, { passive: true });
+
+  // Passando col mouse sul numerino degli aggiornamenti: finestrella con data e testo, uno sotto l'altro
+  const notePop = document.createElement('div');
+  notePop.className = 'note-pop'; notePop.hidden = true; notePop.setAttribute('role', 'tooltip');
+  document.body.appendChild(notePop);
+  const npFmt = new Intl.DateTimeFormat('it-IT', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  let npFor = null;
+  function showNotePop(btn) {
+    const it = state.items.find((x) => x.id === btn.dataset.id);
+    const notes = it ? (it.notes || []).slice().sort((a, b) => String(b.at).localeCompare(String(a.at))) : [];
+    if (!notes.length) return;
+    npFor = btn;
+    notePop.innerHTML = '<div class="np-head">Aggiornamenti · ' + notes.length + '</div>' + notes.map((n) =>
+      '<div class="np-row"><div class="np-date">' + (n.at ? esc(npFmt.format(new Date(n.at))) : '') + (n.by ? '<span> · ' + esc(n.by) + '</span>' : '') + '</div><div class="np-text">' + esc(up(n.text)) + '</div></div>').join('');
+    notePop.hidden = false;
+    const r = btn.getBoundingClientRect(), w = notePop.offsetWidth, h = notePop.offsetHeight;
+    const below = r.bottom + 8 + h <= window.innerHeight;
+    notePop.style.top = Math.max(8, below ? r.bottom + 8 : r.top - h - 8) + 'px';
+    notePop.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, r.left + r.width / 2 - w / 2)) + 'px';
+  }
+  function hideNotePop() { notePop.hidden = true; npFor = null; }
+  document.addEventListener('mouseover', (e) => {
+    const b = e.target.closest && e.target.closest('.ncount');
+    if (b) { if (b !== npFor) showNotePop(b); }
+    else if (npFor) hideNotePop();
+  });
+  window.addEventListener('scroll', hideNotePop, { passive: true });
+  document.addEventListener('click', hideNotePop, true);
 
   async function doAct(act, it) {
     if (act === 'edit') openEdit(it.id);
