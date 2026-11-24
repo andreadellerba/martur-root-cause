@@ -261,16 +261,19 @@ main{padding-top:4px}
 .hist-head{margin:26px 0 12px;text-align:center;font-size:26px;font-weight:var(--w-head);letter-spacing:1.2px;color:var(--on-bg)}
 .table-card{background:var(--card);border:1px solid var(--edge);border-radius:28px;box-shadow:var(--shadow);overflow:hidden}
 .table-scroll{overflow-x:auto}
-.ptable{width:100%;border-collapse:collapse;table-layout:fixed;min-width:1120px}
-.ptable.all{min-width:1260px}
+.ptable{width:100%;border-collapse:collapse;table-layout:auto;min-width:960px}
+.ptable.all{min-width:1060px}
 .ptable th{background:var(--gold);color:var(--on-gold);font-size:15px;font-weight:var(--w-head);letter-spacing:.65px;padding:5px 8px;height:44px;text-align:center;vertical-align:middle;line-height:16.25px}
 .ptable th:last-child{border-right:0}
 .sort-btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;border:0;background:transparent;color:inherit;font:inherit;letter-spacing:inherit;padding:0;line-height:16.25px}
 .sort-btn .arr{width:12px;height:12px;flex:none;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;opacity:.5}
 .sort-btn.on .arr{opacity:1;stroke-width:3}
-.ptable td{padding:10px 12px;border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent);font-size:20px;font-weight:var(--w-text);letter-spacing:.2px;text-align:center;vertical-align:middle;overflow-wrap:anywhere;line-height:1.25}
+.ptable td{padding:10px 12px;border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent);font-size:20px;font-weight:var(--w-text);letter-spacing:.2px;text-align:center;vertical-align:middle;overflow-wrap:break-word;line-height:1.25}
 .ptable tbody tr:last-child td{border-bottom:0}
-.c-act{white-space:nowrap}
+.ptable th{white-space:nowrap}
+.ptable .c-sec,.ptable .c-date,.ptable .c-act{width:1%;white-space:nowrap}
+.ptable td.c-act{padding-left:4px;padding-right:10px}
+.ptable td.c-date{padding-left:8px;padding-right:8px}
 .muted{color:var(--muted)}
 .empty td{padding:28px 10px !important;font-size:22px !important;font-weight:var(--w-text)}
 .sec-tag{display:inline-block;padding:4px 11px;border-radius:999px;background:var(--chip);font-size:15px;font-weight:var(--w-head);letter-spacing:.5px;white-space:nowrap}
@@ -1104,7 +1107,8 @@ body:not(.booting) .boot{display:none}
       return '<th class="' + c.cls + '"><button type="button" class="sort-btn' + (on ? ' on' : '') + '" data-sort="' + c.key + '" data-list="' + which + '"><span>' + esc(c.label) + '</span><svg class="arr" viewBox="0 0 24 24" aria-hidden="true">' + arr + '</svg></button></th>';
     }).join('') + '<th class="c-act"></th></tr>';
   }
-  function colgroup() { const i = state.view === 'all' ? 1 : 0; return cols().map((c) => '<col style="width:' + c.w[i] + '%">').join('') + '<col style="width:' + ACT_W[i] + '%">'; }
+  // colonne su misura: Da, date, spunta e ⋯ larghe quanto il contenuto, il resto ai testi scritti a mano
+  function colgroup() { return ''; }
 
   function row(it, which) {
     const urgent = isUrgent(it), soon = isSoon(it), n = age(it), p = PRIO[it.priority];
