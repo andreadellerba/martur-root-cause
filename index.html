@@ -270,6 +270,7 @@ main{padding-top:4px}
 .sort-btn.on .arr{opacity:1;stroke-width:3}
 .ptable td{padding:10px 12px;border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent);font-size:20px;font-weight:var(--w-text);letter-spacing:.2px;text-align:center;vertical-align:middle;overflow-wrap:break-word;line-height:1.25}
 .ptable tbody tr:last-child td{border-bottom:0}
+.ptable tbody td + td{border-left:1px solid color-mix(in srgb,var(--line) 45%,transparent)}
 .ptable th{white-space:nowrap}
 .ptable .c-sec,.ptable .c-date,.ptable .c-act{width:1%;white-space:nowrap}
 .ptable td.c-act{padding-left:4px;padding-right:10px}
@@ -1441,7 +1442,7 @@ body:not(.booting) .boot{display:none}
     if (rowMenuBtn === btn) { closeRowMenu(); return; }
     closeDrops(); closeRowMenu();
     const item = (act, icon, label, cls) => '<button type="button" class="drop-item' + (cls ? ' ' + cls : '') + '" role="menuitem" data-ract="' + act + '">' + svg(icon) + label + '</button>';
-    rowMenu.innerHTML = item('edit', ICON.edit, 'Modifica') + (it.chiusura ? item('reopen', ICON.reopen, 'Riapri') : item('close', ICON.check, 'Chiudi')) + '<div class="drop-sep"></div>' + item('del', ICON.trash, 'Elimina', 'danger');
+    rowMenu.innerHTML = item('edit', ICON.edit, 'Modifica') + (it.chiusura ? item('reopen', ICON.reopen, 'Riapri') : item('closeDlg', ICON.check, 'Chiudi con data…')) + '<div class="drop-sep"></div>' + item('del', ICON.trash, 'Elimina', 'danger');
     rowMenu.dataset.id = it.id;
     rowMenu.hidden = false;
     const r = btn.getBoundingClientRect(), w = rowMenu.offsetWidth, h = rowMenu.offsetHeight;
@@ -1490,7 +1491,15 @@ body:not(.booting) .boot{display:none}
 
   async function doAct(act, it) {
     if (act === 'edit') openEdit(it.id);
-    else if (act === 'close') openClose(it.id);
+    else if (act === 'close') {
+      // spunta: chiude subito con la data di oggi e lo sposta nello storico (dal menu ⋯ si può scegliere data e azione correttiva)
+      const d = todayISO() < it.apertura ? it.apertura : todayISO();
+      try {
+        await db.collection('problems').doc(it.id).update({ chiusura: d, updatedAt: TS(), updatedBy: state.username });
+        logAudit('close', itemLabel(it), [{ field: FIELD_LABEL.chiusura, from: null, to: fmt(d) }]);
+        toast('Chiuso e spostato nello storico');
+      } catch (ex) { fail(ex); }
+    } else if (act === 'closeDlg') openClose(it.id);
     else if (act === 'reopen') {
       try {
         await db.collection('problems').doc(it.id).update({ chiusura: '', updatedAt: TS(), updatedBy: state.username });
