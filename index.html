@@ -288,8 +288,9 @@ main{padding-top:4px}
 .ptable tbody tr.row td{background:color-mix(in srgb,var(--pc) 7%,transparent)}
 .ptable tbody tr.row td:first-child{box-shadow:inset 7px 0 0 var(--pc)}
 .ptable tbody tr.row:hover td{background:color-mix(in srgb,var(--pc) 12%,transparent)}
-.ptable td.c-name,.ptable td.c-dove,.ptable td.c-resp,.ptable td.c-imm,.ptable td.c-corr{text-align:left}
-.ptable th.c-name,.ptable th.c-dove,.ptable th.c-resp,.ptable th.c-imm,.ptable th.c-corr{text-align:left;padding-left:14px}
+.ptable td.c-name,.ptable td.c-dove,.ptable td.c-resp,.ptable td.c-az{text-align:left}
+.ptable th.c-name,.ptable th.c-dove,.ptable th.c-resp,.ptable th.c-az{text-align:left;padding-left:14px}
+.az-sep{color:var(--gold);font-weight:var(--w-head);padding:0 2px}
 .ptable td.c-name{padding-left:16px}
 .az{display:grid;gap:4px}
 .az-l{display:block;font-size:10.5px;letter-spacing:.5px;color:var(--muted);font-weight:var(--w-head);margin-bottom:1px}
@@ -463,7 +464,7 @@ body:not(.booting) .boot{display:none}
   .ptable tr.row td.c-name{grid-column:1/-1;background:color-mix(in srgb,var(--pc) 10%,var(--band)) !important;padding:12px 48px 11px;font-size:19px;text-align:center;font-weight:var(--w-head)}
   .ptable tr.row td.c-name::before{display:none}
   .m-dot{display:inline-block;margin-right:8px;vertical-align:-1px}
-  .ptable tr.row td.c-imm,.ptable tr.row td.c-corr{grid-column:1/-1}
+  .ptable tr.row td.c-az{grid-column:1/-1}
   .ptable tr.row td.c-act{position:absolute;top:5px;right:6px;padding:0}
   .ptable tr.row td.c-act::before{display:none}
   .ptable tr.empty{display:block;background:var(--card);border:1px solid var(--edge);border-radius:24px;box-shadow:var(--shadow)}
@@ -859,9 +860,8 @@ body:not(.booting) .boot{display:none}
     { key: 'nome', label: 'Problema', cls: 'c-name', w: [19, 17] },
     { key: 'dove', label: 'Dove', cls: 'c-dove', w: [12, 11] },
     { key: 'responsabile', label: 'Resp.', cls: 'c-resp', w: [10, 9] },
-    { key: 'azioneImmediata', label: 'Az. immediata', cls: 'c-imm', w: [17, 16] },
-    { key: 'azioneCorrettiva', label: 'Az. correttiva', cls: 'c-corr', w: [17, 16] },
-    { key: 'apertura', label: 'Apertura', cls: 'c-date ap', w: [11, 11] },
+    { key: 'azioneImmediata', label: 'Azioni (immediata - correttiva)', cls: 'c-az', w: [32, 30] },
+    { key: 'apertura', label: 'Apertura', cls: 'c-date ap', w: [13, 13] },
     { key: 'chiusura', label: 'Chiusura', cls: 'c-date', w: [10, 9] }
   ];
   const ACT_W = [4, 3.5];
@@ -1125,8 +1125,8 @@ body:not(.booting) .boot{display:none}
       '<td class="c-name"><span class="m-dot"><span class="dot sm ' + it.priority + '"></span></span>' + esc(up(it.nome)) + notes + '</td>' +
       '<td class="c-dove" data-label="Dove">' + t(it.dove) + '</td>' +
       '<td class="c-resp" data-label="Responsabile">' + t(it.responsabile) + '</td>' +
-      '<td class="c-imm" data-label="Azione immediata">' + t(it.azioneImmediata) + '</td>' +
-      '<td class="c-corr" data-label="Azione correttiva">' + t(it.azioneCorrettiva) + '</td>' +
+      // azione immediata e correttiva insieme, divise da un trattino; se una manca resta vuota (il trattino rimane)
+      '<td class="c-az" data-label="Azioni (immediata - correttiva)">' + esc(up(it.azioneImmediata)) + ' <span class="az-sep">-</span> ' + esc(up(it.azioneCorrettiva)) + '</td>' +
       '<td class="c-date ap" data-label="Apertura">' + ap + '</td>' +
       '<td class="c-date" data-label="Chiusura">' + ch + '</td>' +
       '<td class="c-act"><button type="button" class="icon-btn" data-act="more" data-id="' + it.id + '" data-list="' + which + '" title="Altro" aria-haspopup="true">' + svg(ICON.more) + '</button></td></tr>';
