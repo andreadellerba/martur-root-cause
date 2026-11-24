@@ -1117,7 +1117,7 @@ body:not(.booting) .boot{display:none}
       ap = '<span class="pill' + (urgent ? ' warn' : soon ? ' soon' : ' ok') + '" title="' + tip + '">' + '<span class="nw">' + fmt(it.apertura) + '</span> · <span class="nw">' + days + '</span></span>';
       ch = '<button type="button" class="chk-btn" data-act="close" data-id="' + it.id + '" title="Chiudi e sposta nello storico" aria-label="Chiudi">' + svg(ICON.check) + '</button>';
     } else {
-      ap = '<span class="date">' + fmt(it.apertura) + '</span>';
+      ap = '<span class="pill" title="Data di apertura">' + fmt(it.apertura) + '</span>';
       ch = '<span class="pill' + (n > URGENT_DAYS ? ' late' : '') + '" title="Chiuso in ' + n + ' giorni"><span class="nw">' + fmt(it.chiusura) + '</span> · <span class="nw">' + n + ' gg</span></span>';
     }
     const nn = (it.notes || []).length;
