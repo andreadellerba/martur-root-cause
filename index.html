@@ -261,14 +261,13 @@ main{padding-top:4px}
 .table-scroll{overflow-x:auto}
 .ptable{width:100%;border-collapse:collapse;table-layout:fixed;min-width:1120px}
 .ptable.all{min-width:1260px}
-.ptable th{background:var(--gold);color:var(--on-gold);font-size:13px;font-weight:var(--w-head);letter-spacing:.65px;padding:5px 8px;height:58px;text-align:center;border-right:1px solid color-mix(in srgb,var(--on-gold) 25%,transparent);vertical-align:middle;line-height:16.25px}
+.ptable th{background:var(--gold);color:var(--on-gold);font-size:13px;font-weight:var(--w-head);letter-spacing:.65px;padding:5px 8px;height:44px;text-align:center;vertical-align:middle;line-height:16.25px}
 .ptable th:last-child{border-right:0}
 .sort-btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;border:0;background:transparent;color:inherit;font:inherit;letter-spacing:inherit;padding:0;line-height:16.25px}
 .sort-btn .arr{width:12px;height:12px;flex:none;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;opacity:.5}
 .sort-btn.on .arr{opacity:1;stroke-width:3}
-.ptable td{padding:10px;border-bottom:1px solid var(--line);font-size:14px;font-weight:var(--w-text);letter-spacing:.2px;text-align:center;vertical-align:middle;overflow-wrap:anywhere;line-height:1.3}
+.ptable td{padding:6px 10px;border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent);font-size:14px;font-weight:var(--w-text);letter-spacing:.2px;text-align:center;vertical-align:middle;overflow-wrap:anywhere;line-height:1.3}
 .ptable tbody tr:last-child td{border-bottom:0}
-.ptable tbody tr.row:hover td{background:var(--hover)}
 .c-date,.c-act{white-space:nowrap}
 .muted{color:var(--muted)}
 .empty td{padding:28px 10px !important;font-size:22px !important;font-weight:var(--w-text)}
@@ -285,14 +284,30 @@ main{padding-top:4px}
 .age.soon{background:var(--arancio);color:#fff}
 .age.warn{background:var(--rosso);color:#fff}
 .age.late{background:var(--rosso-soft);color:var(--rosso)}
-tr.soon td{background:var(--arancio-soft)}
-tr.soon td:first-child{box-shadow:inset 5px 0 0 var(--arancio)}
-tr.soon .c-date.ap .date{color:var(--arancio)}
-tr.urgent td{background:var(--rosso-soft)}
-tr.urgent td:first-child{box-shadow:inset 5px 0 0 var(--rosso)}
-tr.urgent .c-date.ap .date{color:var(--rosso)}
-tr.urgent .dot{animation:pulse 1.6s ease-in-out infinite}
-@keyframes pulse{50%{box-shadow:0 0 0 7px rgba(208,52,44,.18)}}
+/* P3: priorità = barra a sinistra + leggera tinta della riga; S1 compatte; S3 linee leggere; S5 testi a sinistra */
+.ptable tbody tr.row td{background:color-mix(in srgb,var(--pc) 7%,transparent)}
+.ptable tbody tr.row td:first-child{box-shadow:inset 7px 0 0 var(--pc)}
+.ptable tbody tr.row:hover td{background:color-mix(in srgb,var(--pc) 12%,transparent)}
+.ptable td.c-name,.ptable td.c-dove,.ptable td.c-resp,.ptable td.c-az{text-align:left}
+.ptable th.c-name,.ptable th.c-dove,.ptable th.c-resp,.ptable th.c-az{text-align:left;padding-left:14px}
+.ptable td.c-name{padding-left:16px}
+.az{display:grid;gap:4px}
+.az-l{display:block;font-size:10.5px;letter-spacing:.5px;color:var(--muted);font-weight:var(--w-head);margin-bottom:1px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;background:var(--chip);font-size:13px;font-weight:var(--w-head);letter-spacing:.3px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pill.soon{background:var(--arancio);color:#fff}
+.pill.warn{background:var(--rosso);color:#fff}
+.pill.late{background:var(--rosso-soft);color:var(--rosso)}
+.chk-btn{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--gold);background:var(--card);color:var(--gold);display:inline-flex;align-items:center;justify-content:center;padding:0}
+.chk-btn:hover{background:var(--gold);color:var(--on-gold)}
+.chk-btn svg.i{width:17px;height:17px;stroke-width:2.6}
+.ncount{display:inline-flex;align-items:center;gap:2px;margin-left:7px;padding:1px 6px;border:0;border-radius:999px;background:transparent;color:var(--gold);font-size:12.5px;font-weight:var(--w-head);vertical-align:1px}
+.ncount:hover{background:var(--gold-soft)}
+.ncount svg.i{width:14px;height:14px}
+.row-menu{position:fixed;left:0;top:0;transform:none;min-width:170px;z-index:60}
+.row-menu .drop-item{font-size:15px;padding:7px 10px}
+.row-menu .drop-item svg.i{width:16px;height:16px}
+.row-menu .drop-item.danger{color:var(--rosso)}
+.row-menu .drop-item.danger:hover{background:var(--rosso-soft)}
 .close-btn{height:32px;padding:0 12px;border-radius:12.5px;border:1px solid var(--gold);background:var(--card);color:var(--gold);font-weight:var(--w-head);font-size:13px;letter-spacing:.5px;display:inline-flex;align-items:center;gap:6px}
 .close-btn:hover{background:var(--gold-soft)}
 .icon-btn{width:34px;height:34px;border-radius:12px;border:1px solid transparent;background:transparent;display:inline-flex;align-items:center;justify-content:center;color:var(--ink)}
@@ -441,20 +456,15 @@ body:not(.booting) .boot{display:none}
   .ptable,.ptable.all{min-width:0}
   .ptable colgroup,.ptable thead{display:none}
   .ptable,.ptable tbody{display:block}
-  .ptable tr.row{display:grid;grid-template-columns:1fr 1fr;background:var(--card);border:1px solid var(--edge);border-radius:24px;box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
+  .ptable tr.row{position:relative;display:grid;grid-template-columns:1fr 1fr;background:color-mix(in srgb,var(--pc) 6%,var(--card));border:1px solid var(--edge);border-left:7px solid var(--pc);border-radius:24px;box-shadow:var(--shadow);margin-bottom:12px;overflow:hidden}
   .ptable tr.row td{display:block;width:auto;border:0;padding:7px 14px;text-align:left;background:transparent !important;box-shadow:none !important}
   .ptable tr.row td::before{content:attr(data-label);display:block;font-size:11px;letter-spacing:.6px;color:var(--muted);font-weight:var(--w-head);margin-bottom:1px}
-  .ptable tr.row td.c-prio{display:none}
-  .ptable tr.row td.c-name{grid-column:1/-1;background:var(--band) !important;padding:12px 14px 11px;font-size:16px;text-align:center;font-weight:var(--w-head)}
+  .ptable tr.row td.c-name{grid-column:1/-1;background:color-mix(in srgb,var(--pc) 10%,var(--band)) !important;padding:12px 48px 11px;font-size:16px;text-align:center;font-weight:var(--w-head)}
   .ptable tr.row td.c-name::before{display:none}
   .m-dot{display:inline-block;margin-right:8px;vertical-align:-1px}
-  .ptable tr.row td.c-imm,.ptable tr.row td.c-corr{grid-column:1/-1}
-  .ptable tr.row td.c-act{grid-column:1/-1;display:flex;justify-content:flex-end;gap:4px;border-top:1px solid var(--line);padding:6px 10px}
+  .ptable tr.row td.c-az{grid-column:1/-1}
+  .ptable tr.row td.c-act{position:absolute;top:5px;right:6px;padding:0}
   .ptable tr.row td.c-act::before{display:none}
-  .ptable tr.soon{border-color:var(--arancio)}
-  .ptable tr.soon td.c-name{background:color-mix(in srgb,var(--arancio) 16%,var(--card)) !important}
-  .ptable tr.urgent{border-color:var(--rosso);box-shadow:0 0 0 2px var(--rosso-soft),var(--shadow)}
-  .ptable tr.urgent td.c-name{background:color-mix(in srgb,var(--rosso) 14%,var(--card)) !important}
   .ptable tr.empty{display:block;background:var(--card);border:1px solid var(--edge);border-radius:24px;box-shadow:var(--shadow)}
   .ptable tr.empty td{display:block;font-size:17px !important;padding:22px 10px !important;text-align:center}
   .log-row{grid-template-columns:1fr;gap:2px;padding:10px 14px}
@@ -804,6 +814,7 @@ body:not(.booting) .boot{display:none}
     trash: '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
     reopen: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
     check: '<path d="M20 6 9 17l-5-5"/>',
+    more: '<circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/><circle cx="5" cy="12" r="1.3"/>',
     note: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
     key: '<path d="m15.5 7.5 2.3 2.3a1 1 0 0 0 1.4 0l2.1-2.1a1 1 0 0 0 0-1.4L19 4"/><path d="m21 2-9.6 9.6"/><circle cx="7.5" cy="15.5" r="5.5"/>'
   };
@@ -841,17 +852,17 @@ body:not(.booting) .boot{display:none}
     azioneImmediata: 'Azione immediata', azioneCorrettiva: 'Azione correttiva', apertura: 'Data apertura', chiusura: 'Data chiusura'
   };
   const COLS = [
-    { key: 'prio', label: 'Priorità', cls: 'c-prio', w: [7, 6] },
-    { key: 'section', label: 'Problema da', cls: 'c-sec', w: [0, 8], allOnly: true },
-    { key: 'nome', label: 'Nome problema', cls: 'c-name', w: [14, 13] },
-    { key: 'dove', label: 'Dove è stato riscontrato', cls: 'c-dove', w: [12, 11] },
-    { key: 'responsabile', label: 'Responsabile', cls: 'c-resp', w: [10, 9] },
-    { key: 'azioneImmediata', label: 'Azione immediata', cls: 'c-imm', w: [14, 13] },
-    { key: 'azioneCorrettiva', label: 'Azione correttiva', cls: 'c-corr', w: [14, 13] },
-    { key: 'apertura', label: 'Data apertura', cls: 'c-date ap', w: [10, 9.5] },
-    { key: 'chiusura', label: 'Data chiusura', cls: 'c-date', w: [10, 9.5] }
+    // Scelte P3 U6 C4 C6 C7 A1 A3 S1 S3 S5: priorità come barra + tinta della riga (niente colonna),
+    // intestazioni corte, azioni immediata/correttiva in una colonna, data e giorni in una pillola
+    { key: 'section', label: 'Da', cls: 'c-sec', w: [0, 8], allOnly: true },
+    { key: 'nome', label: 'Problema', cls: 'c-name', w: [18, 16] },
+    { key: 'dove', label: 'Dove', cls: 'c-dove', w: [13, 11] },
+    { key: 'responsabile', label: 'Resp.', cls: 'c-resp', w: [11, 10] },
+    { key: 'azioneImmediata', label: 'Azioni', cls: 'c-az', w: [30, 27] },
+    { key: 'apertura', label: 'Apertura', cls: 'c-date ap', w: [13, 13] },
+    { key: 'chiusura', label: 'Chiusura', cls: 'c-date', w: [10, 10] }
   ];
-  const ACT_W = [9, 8];
+  const ACT_W = [5, 5];
   const AUDIT = {
     login: ['ha effettuato l\'accesso', 'access'], logout: ['è uscito', 'access'], password: ['ha cambiato la propria password', 'access'],
     create: ['ha aggiunto il problema', 'data'], edit: ['ha modificato', 'data'], reopen: ['ha riaperto', 'data'], note: ['ha aggiunto un aggiornamento a', 'data'],
@@ -1087,39 +1098,35 @@ body:not(.booting) .boot{display:none}
       // stessa freccia per tutte le colonne: doppia (spenta) se non ordinata, singola se ordinata
       const arr = on ? (s.dir === 1 ? '<path d="m7 15 5-5 5 5"/>' : '<path d="m7 9 5 5 5-5"/>') : '<path d="m7 9 5-5 5 5"/><path d="m7 15 5 5 5-5"/>';
       return '<th class="' + c.cls + '"><button type="button" class="sort-btn' + (on ? ' on' : '') + '" data-sort="' + c.key + '" data-list="' + which + '"><span>' + esc(c.label) + '</span><svg class="arr" viewBox="0 0 24 24" aria-hidden="true">' + arr + '</svg></button></th>';
-    }).join('') + '<th class="c-act">Azioni</th></tr>';
+    }).join('') + '<th class="c-act"></th></tr>';
   }
   function colgroup() { const i = state.view === 'all' ? 1 : 0; return cols().map((c) => '<col style="width:' + c.w[i] + '%">').join('') + '<col style="width:' + ACT_W[i] + '%">'; }
 
   function row(it, which) {
     const urgent = isUrgent(it), soon = isSoon(it), n = age(it), p = PRIO[it.priority];
-    const dot = '<span class="dot ' + it.priority + '" title="Priorità ' + esc(p.label) + '"></span>';
     const t = (v) => v ? esc(up(v)) : '<span class="muted">—</span>';
-    let ap = '<span class="date">' + fmt(it.apertura) + '</span>', ch;
+    const days = n === 0 ? 'oggi' : n + ' gg';
+    let ap, ch;
     if (which === 'open') {
-      ap += urgent ? '<span class="age warn" title="Aperto da più di ' + URGENT_DAYS + ' giorni: intervenire">⚠ ' + n + ' gg · urgente</span>'
-        : soon ? '<span class="age soon" title="Diventa urgente dopo il ' + URGENT_DAYS + '° giorno">' + n + ' gg · in scadenza</span>'
-        : '<span class="age">' + (n === 0 ? 'oggi' : n + ' gg') + '</span>';
-      ch = '<button type="button" class="close-btn" data-act="close" data-id="' + it.id + '">' + svg(ICON.check) + 'Chiudi</button>';
+      // data e giorni in una pillola, colorata quando è in scadenza o urgente
+      const tip = urgent ? 'Aperto da più di ' + URGENT_DAYS + ' giorni: urgente' : soon ? 'In scadenza: diventa urgente dopo il ' + URGENT_DAYS + '° giorno' : 'Aperto da ' + days;
+      ap = '<span class="pill' + (urgent ? ' warn' : soon ? ' soon' : '') + '" title="' + tip + '">' + (urgent ? '⚠ ' : '') + fmt(it.apertura) + ' · ' + days + '</span>';
+      ch = '<button type="button" class="chk-btn" data-act="close" data-id="' + it.id + '" title="Chiudi e sposta nello storico" aria-label="Chiudi">' + svg(ICON.check) + '</button>';
     } else {
-      ch = '<span class="date">' + fmt(it.chiusura) + '</span><span class="age' + (n > URGENT_DAYS ? ' late' : '') + '">in ' + n + ' gg</span>';
+      ap = '<span class="date">' + fmt(it.apertura) + '</span>';
+      ch = '<span class="pill' + (n > URGENT_DAYS ? ' late' : '') + '" title="Chiuso in ' + n + ' giorni">' + fmt(it.chiusura) + ' · in ' + n + ' gg</span>';
     }
     const nn = (it.notes || []).length;
-    const notes = nn ? '<br><span class="notes-chip" data-act="edit" data-id="' + it.id + '" title="Vedi aggiornamenti">' + svg(ICON.note) + nn + (nn === 1 ? ' aggiornamento' : ' aggiornamenti') + '</span>' : '';
-    const acts = (which === 'closed' ? '<button type="button" class="icon-btn" data-act="reopen" data-id="' + it.id + '" title="Riapri">' + svg(ICON.reopen) + '</button>' : '') +
-      '<button type="button" class="icon-btn" data-act="edit" data-id="' + it.id + '" title="Modifica">' + svg(ICON.edit) + '</button>' +
-      '<button type="button" class="icon-btn danger" data-act="del" data-id="' + it.id + '" title="Elimina">' + svg(ICON.trash) + '</button>';
-    return '<tr class="row' + (urgent ? ' urgent' : (soon ? ' soon' : '')) + '">' +
-      '<td class="c-prio" data-label="Priorità">' + dot + '</td>' +
+    const notes = nn ? '<button type="button" class="ncount" data-act="edit" data-id="' + it.id + '" title="' + nn + (nn === 1 ? ' aggiornamento' : ' aggiornamenti') + '">' + svg(ICON.note) + nn + '</button>' : '';
+    return '<tr class="row prio-' + it.priority + (urgent ? ' urgent' : (soon ? ' soon' : '')) + '" style="--pc:#' + p.hex + '" title="Priorità ' + esc(p.label) + '">' +
       (state.view === 'all' ? '<td class="c-sec" data-label="Problema da"><span class="sec-tag">' + esc(secLabel(it.section)) + '</span></td>' : '') +
-      '<td class="c-name"><span class="m-dot">' + dot.replace('class="dot', 'class="dot sm') + '</span>' + esc(up(it.nome)) + notes + '</td>' +
+      '<td class="c-name"><span class="m-dot"><span class="dot sm ' + it.priority + '"></span></span>' + esc(up(it.nome)) + notes + '</td>' +
       '<td class="c-dove" data-label="Dove">' + t(it.dove) + '</td>' +
       '<td class="c-resp" data-label="Responsabile">' + t(it.responsabile) + '</td>' +
-      '<td class="c-imm" data-label="Azione immediata">' + t(it.azioneImmediata) + '</td>' +
-      '<td class="c-corr" data-label="Azione correttiva">' + t(it.azioneCorrettiva) + '</td>' +
-      '<td class="c-date ap" data-label="Data apertura">' + ap + '</td>' +
-      '<td class="c-date" data-label="Data chiusura">' + ch + '</td>' +
-      '<td class="c-act">' + acts + '</td></tr>';
+      '<td class="c-az" data-label="Azioni"><div class="az"><div><span class="az-l">Immediata</span>' + t(it.azioneImmediata) + '</div><div><span class="az-l">Correttiva</span>' + t(it.azioneCorrettiva) + '</div></div></td>' +
+      '<td class="c-date ap" data-label="Apertura">' + ap + '</td>' +
+      '<td class="c-date" data-label="Chiusura">' + ch + '</td>' +
+      '<td class="c-act"><button type="button" class="icon-btn" data-act="more" data-id="' + it.id + '" data-list="' + which + '" title="Altro" aria-haspopup="true">' + svg(ICON.more) + '</button></td></tr>';
   }
 
   function renderTable(which) {
@@ -1370,7 +1377,40 @@ body:not(.booting) .boot{display:none}
     }
     const b = e.target.closest('[data-act]'); if (!b) return;
     const it = state.items.find((x) => x.id === b.dataset.id); if (!it) return;
-    const act = b.dataset.act;
+    if (b.dataset.act === 'more') { e.stopPropagation(); openRowMenu(b, it); return; }
+    doAct(b.dataset.act, it);
+  });
+
+  // Menu ⋯ della riga: Modifica, Riapri (solo storico), Elimina
+  const rowMenu = document.createElement('div');
+  rowMenu.className = 'drop-menu row-menu'; rowMenu.setAttribute('role', 'menu'); rowMenu.hidden = true;
+  document.body.appendChild(rowMenu);
+  let rowMenuBtn = null;
+  function closeRowMenu() { rowMenu.hidden = true; if (rowMenuBtn) rowMenuBtn.setAttribute('aria-expanded', 'false'); rowMenuBtn = null; }
+  function openRowMenu(btn, it) {
+    if (rowMenuBtn === btn) { closeRowMenu(); return; }
+    closeDrops(); closeRowMenu();
+    const item = (act, icon, label, cls) => '<button type="button" class="drop-item' + (cls ? ' ' + cls : '') + '" role="menuitem" data-ract="' + act + '">' + svg(icon) + label + '</button>';
+    rowMenu.innerHTML = item('edit', ICON.edit, 'Modifica') + (it.chiusura ? item('reopen', ICON.reopen, 'Riapri') : item('close', ICON.check, 'Chiudi')) + '<div class="drop-sep"></div>' + item('del', ICON.trash, 'Elimina', 'danger');
+    rowMenu.dataset.id = it.id;
+    rowMenu.hidden = false;
+    const r = btn.getBoundingClientRect(), w = rowMenu.offsetWidth, h = rowMenu.offsetHeight;
+    const top = r.bottom + 6 + h > window.innerHeight ? r.top - h - 6 : r.bottom + 6;
+    rowMenu.style.top = Math.max(8, top) + 'px';
+    rowMenu.style.left = Math.max(8, Math.min(window.innerWidth - w - 8, r.right - w)) + 'px';
+    rowMenuBtn = btn; btn.setAttribute('aria-expanded', 'true');
+  }
+  rowMenu.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-ract]'); if (!b) return;
+    const it = state.items.find((x) => x.id === rowMenu.dataset.id);
+    closeRowMenu();
+    if (it) doAct(b.dataset.ract, it);
+  });
+  document.addEventListener('click', (e) => { if (!rowMenu.hidden && !rowMenu.contains(e.target)) closeRowMenu(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeRowMenu(); });
+  window.addEventListener('scroll', closeRowMenu, { passive: true });
+
+  async function doAct(act, it) {
     if (act === 'edit') openEdit(it.id);
     else if (act === 'close') openClose(it.id);
     else if (act === 'reopen') {
@@ -1387,7 +1427,7 @@ body:not(.booting) .boot{display:none}
         toast('Problema eliminato');
       } catch (ex) { fail(ex); }
     }
-  });
+  }
 
   function setView(id) {
     if (!visibleViews().some((v) => v.id === id)) return;
