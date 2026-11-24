@@ -273,10 +273,11 @@ main{padding-top:4px}
 .ptable th{white-space:nowrap}
 .ptable .c-sec,.ptable .c-date,.ptable .c-act{width:1%;white-space:nowrap}
 .ptable td.c-act{padding-left:4px;padding-right:10px}
-.ptable td.c-date{padding-left:8px;padding-right:8px}
+.ptable td.c-date{padding-left:14px;padding-right:14px}
+.ptable td.c-sec{padding-left:18px}
 .muted{color:var(--muted)}
 .empty td{padding:28px 10px !important;font-size:22px !important;font-weight:var(--w-text)}
-.sec-tag{display:inline-block;padding:4px 11px;border-radius:999px;background:var(--chip);font-size:15px;font-weight:var(--w-head);letter-spacing:.5px;white-space:nowrap}
+.sec-tag{display:inline-block;padding:0;font-size:15px;font-weight:var(--w-head);letter-spacing:.5px;white-space:nowrap}
 .notes-chip{display:inline-flex;align-items:center;gap:4px;margin-top:5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:11.5px;font-weight:var(--w-head);letter-spacing:.4px;color:var(--gold);cursor:pointer}
 .notes-chip svg{width:13px;height:13px}
 .dot{display:inline-block;width:18px;height:18px;border-radius:50%;vertical-align:middle;box-shadow:0 0 0 4px var(--ring,transparent);flex:none}
@@ -299,12 +300,18 @@ main{padding-top:4px}
 .ptable td.c-name{padding-left:16px}
 .az{display:grid;gap:4px}
 .az-l{display:block;font-size:10.5px;letter-spacing:.5px;color:var(--muted);font-weight:var(--w-head);margin-bottom:1px}
-.pill{display:inline-block;white-space:nowrap;line-height:1.25;padding:4px 11px;border-radius:999px;background:var(--chip);font-size:16px;font-weight:var(--w-head);letter-spacing:.3px;font-variant-numeric:tabular-nums}
-.nw{white-space:nowrap}
-.pill.ok{background:var(--verde);color:#fff}
-.pill.soon{background:var(--arancio);color:#fff}
-.pill.warn{background:var(--rosso);color:#fff}
-.pill.late{background:var(--rosso-soft);color:var(--rosso)}
+/* date senza badge: testo pieno con colori accesi e ombra leggera (come il meteo) */
+.pill{display:inline-block;white-space:nowrap;line-height:1.25;font-size:19px;font-weight:var(--w-head);letter-spacing:.3px;font-variant-numeric:tabular-nums;color:var(--ink)}
+.pill.ok{color:#16b35a;text-shadow:0 1px 1px rgba(0,0,0,.22)}
+.pill.soon{color:#ff7a00;text-shadow:0 1px 1px rgba(0,0,0,.22)}
+.pill.warn,.pill.late{color:#ef2b2b;text-shadow:0 1px 1px rgba(0,0,0,.22)}
+:root[data-theme="dark"] .pill.ok{color:#3ddc7e}:root[data-theme="dark"] .pill.soon{color:#ff9a3c}:root[data-theme="dark"] .pill.warn,:root[data-theme="dark"] .pill.late{color:#ff5a5a}
+/* Modifica testi: il testo sotto il mouse si evidenzia, la barra in basso ricorda che la modalità è accesa */
+body.text-editing .txt-hover{outline:2px dashed #e0b400;outline-offset:2px;background:rgba(255,214,0,.18);cursor:text;border-radius:4px}
+.txt-bar{position:fixed;left:50%;bottom:max(14px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:1000;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 24px);padding:8px 8px 8px 14px;border-radius:999px;background:#1f1f1f;color:#fff;font-size:14px;font-weight:var(--w-text);text-transform:none;box-shadow:0 6px 24px rgba(0,0,0,.3)}
+.txt-bar svg.i{color:#ffd600}
+.txt-bar .btn{border-radius:999px;background:#ffd600;color:#111;padding:0 14px;font-weight:var(--w-head)}
+@media (max-width:1000px),(max-width:1180px) and (pointer:coarse){ .txt-bar{bottom:calc(112px + env(safe-area-inset-bottom))} }
 .chk-btn{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--gold);background:var(--card);color:var(--gold);display:inline-flex;align-items:center;justify-content:center;padding:0}
 .chk-btn:hover{background:var(--gold);color:var(--on-gold)}
 .chk-btn svg.i{width:20px;height:20px;stroke-width:2.6}
@@ -554,6 +561,7 @@ body:not(.booting) .boot{display:none}
         <div class="am-div"></div>
         <button type="button" class="am-item" role="menuitem" id="btn-log"><svg class="i" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></svg>Registro attività</button>
         <button type="button" class="am-item" role="menuitem" id="btn-users"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Utenti</button>
+        <button type="button" class="am-item" role="menuitem" id="btn-texts" hidden><svg class="i" viewBox="0 0 24 24"><path d="M12 4v16"/><path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2"/><path d="M9 20h6"/></svg>Modifica testi</button>
         <button type="button" class="am-item" role="menuitem" id="btn-pass"><svg class="i" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Cambia password</button>
         <button type="button" class="am-item" role="menuitem" id="btn-install" hidden><svg class="i" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="3" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><path d="m9 9 3 3 3-3"/><path d="M12 5v7"/></svg>Installa app</button>
         <button type="button" class="am-item" role="menuitem" id="btn-full"><svg class="i" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><span id="btn-full-txt">Schermo intero</span></button>
@@ -779,6 +787,27 @@ body:not(.booting) .boot{display:none}
   </div>
 </dialog>
 
+<!-- Modifica testi (solo amministratore) -->
+<div class="txt-bar" id="txt-bar" hidden><svg class="i" viewBox="0 0 24 24"><path d="M12 4v16"/><path d="M4 7V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v2"/><path d="M9 20h6"/></svg><span>Modifica testi: tocca un testo per cambiarlo</span><button type="button" class="btn" id="txt-done">Fine</button></div>
+<dialog class="dlg sm" id="dlg-text">
+  <div class="shell">
+    <div class="dlg-head">
+      <div><h2 class="dlg-title">Modifica testo</h2><span class="dlg-hint">La modifica vale per tutti gli utenti.</span></div>
+      <button type="button" class="x-btn" data-cancel aria-label="Chiudi">✕</button>
+    </div>
+    <div class="dlg-body" style="grid-template-columns:1fr">
+      <input class="input lc" id="text-input" maxlength="300" autocomplete="off" style="text-transform:none">
+      <span class="dlg-hint" id="text-orig"></span>
+      <div class="dlg-msg" id="text-msg"></div>
+    </div>
+    <div class="dlg-foot">
+      <button type="button" class="btn" id="text-reset" style="margin-right:auto">Ripristina originale</button>
+      <button type="button" class="btn btn-line" data-cancel>Annulla</button>
+      <button type="button" class="btn btn-primary" id="text-save">Salva</button>
+    </div>
+  </div>
+</dialog>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
@@ -873,7 +902,7 @@ body:not(.booting) .boot{display:none}
   const AUDIT = {
     login: ['ha effettuato l\'accesso', 'access'], logout: ['è uscito', 'access'], password: ['ha cambiato la propria password', 'access'],
     create: ['ha aggiunto il problema', 'data'], edit: ['ha modificato', 'data'], reopen: ['ha riaperto', 'data'], note: ['ha aggiunto un aggiornamento a', 'data'],
-    close: ['ha chiuso', 'close'],
+    close: ['ha chiuso', 'close'], texts: ['ha cambiato il testo', 'data'],
     'delete': ['ha eliminato il problema', 'delete'], 'note.del': ['ha eliminato un aggiornamento da', 'delete'],
     'export': ['ha esportato', 'exports'],
     'user.add': ['ha aggiunto l\'utente', 'users'], 'user.reset': ['ha reimpostato la password di', 'users'], 'user.remove': ['ha tolto l\'accesso a', 'users'], 'user.role': ['ha cambiato il ruolo di', 'users']
@@ -1030,6 +1059,7 @@ body:not(.booting) .boot{display:none}
     if (unsubProblems) { unsubProblems(); unsubProblems = null; }
     if (!user) {
       state.user = null; state.username = ''; state.items = []; state.log = Object.assign(state.log, { rows: [], last: null, loaded: false });
+      unsubscribeTexts(); setTxtEditing(false);
       setLocked(true); return;
     }
     let member = null;
@@ -1044,8 +1074,10 @@ body:not(.booting) .boot{display:none}
     $('#logout-txt').textContent = 'Esci · ' + member.username;
     $('#btn-users').hidden = !isAdmin();
     $('#btn-log').hidden = !isAdmin();
+    $('#btn-texts').hidden = !isAdmin();
     if (state.view === 'log' && !isAdmin()) state.view = 'all';
     setLocked(false);
+    subscribeTexts();
     if (justLoggedIn) { justLoggedIn = false; logAudit('login'); }
     unsubProblems = db.collection('problems').onSnapshot((snap) => {
       state.items = snap.docs.map((d) => Object.assign({ id: d.id }, d.data())).filter((x) => x.nome && x.section && PRIO[x.priority] && validISO(x.apertura));
@@ -1558,6 +1590,121 @@ body:not(.booting) .boot{display:none}
     src.src = logoSrc;
   }
   syncTheme(); syncLogoGold();
+
+  /* ======================= MODIFICA TESTI (come la dashboard, solo amministratore) ======================= */
+  // Dall'ingranaggio "Modifica testi": si tocca un testo (titoli, intestazioni, voci del menu, etichette...)
+  // e lo si cambia. Vale per tutti: le modifiche stanno su Firebase in appTexts/it, campo "t"
+  // (testo originale in minuscolo -> testo nuovo). I dati scritti a mano nei problemi non si toccano.
+  let txtOver = {}, txtUnsub = null, txtEditing = false, txtHover = null, txtTarget = null;
+  const nk = (s) => String(s || '').replace(/\s+/g, ' ').trim().toLowerCase();
+  const TXT_SKIP = '.ptable tbody td:not(.c-sec), #notes-list, #log-list, #users-list, .drop-scroll, .time, .weather, .nav-badge, .toast, #dlg-text, .txt-bar, script, style, datalist, #logout-txt, #edit-sub, #close-sub, #reset-sub, #confirm-text, .ncount, #ex-count, #ex-msg, .dlg-msg, .login-err, #log-count, #install-text';
+  const skipEl = (el) => !el || !!el.closest(TXT_SKIP);
+  const origOfNode = (n) => (n.__shown !== undefined && n.data === n.__shown) ? n.__orig : n.data;
+  function fixText(node) {
+    const el = node.parentElement; if (!el || skipEl(el)) return;
+    const orig = origOfNode(node), k = nk(orig);
+    if (!k || k.length > 80) return;
+    const o = txtOver[k], want = o ? orig.replace(orig.trim(), o) : orig;
+    node.__orig = orig; node.__shown = want;
+    if (node.data !== want) node.data = want;
+  }
+  function fixPh(inp) {
+    if (skipEl(inp)) return;
+    if (inp.dataset.ph0 === undefined) inp.dataset.ph0 = inp.placeholder;
+    const o = txtOver[nk(inp.dataset.ph0)], want = o || inp.dataset.ph0;
+    if (inp.placeholder !== want) inp.placeholder = want;
+  }
+  function applyTexts(root) {
+    if (!root) return;
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode(); n; n = w.nextNode()) if (n.data.trim()) fixText(n);
+    if (root.querySelectorAll) root.querySelectorAll('input[placeholder]').forEach(fixPh);
+  }
+  new MutationObserver((muts) => {
+    muts.forEach((m) => {
+      if (m.type === 'characterData') { if (m.target.data.trim()) fixText(m.target); return; }
+      m.addedNodes.forEach((n) => { if (n.nodeType === 3) { if (n.data.trim()) fixText(n); } else if (n.nodeType === 1) applyTexts(n); });
+    });
+  }).observe(document.body, { childList: true, subtree: true, characterData: true });
+  function subscribeTexts() {
+    if (!db || txtUnsub) return;
+    try { txtUnsub = db.collection('appTexts').doc('it').onSnapshot((d) => {
+      txtOver = (d.exists && d.data().t) || {};
+      applyTexts(document.body);
+    }, () => {}); } catch (e) { console.error(e); txtUnsub = null; }
+  }
+  function unsubscribeTexts() { if (txtUnsub) { txtUnsub(); txtUnsub = null; } }
+
+  const dText = $('#dlg-text');
+  function txtCandidate(t) {
+    if (!t || t.nodeType !== 1 || t.closest('.txt-bar, #dlg-text') || skipEl(t)) return null;
+    if (t.matches('input[placeholder]')) return { el: t, input: t };
+    let el = t;
+    for (let i = 0; el && el !== document.body && i < 4; i++, el = el.parentElement) {
+      if (skipEl(el)) return null;
+      for (const n of el.childNodes) {
+        if (n.nodeType !== 3) continue;
+        const k = nk(origOfNode(n));
+        if (k && k.length <= 80) return { el, node: n };
+      }
+    }
+    return null;
+  }
+  function setTxtHover(el) {
+    if (txtHover === el) return;
+    if (txtHover) txtHover.classList.remove('txt-hover');
+    txtHover = el;
+    if (el) el.classList.add('txt-hover');
+  }
+  function setTxtEditing(on) {
+    txtEditing = !!(on && isAdmin());
+    document.body.classList.toggle('text-editing', txtEditing);
+    $('#txt-bar').hidden = !txtEditing;
+    if (!txtEditing) setTxtHover(null);
+  }
+  function openText(c) {
+    const orig = (c.input ? (c.input.dataset.ph0 !== undefined ? c.input.dataset.ph0 : c.input.placeholder) : origOfNode(c.node)).trim();
+    const key = nk(orig);
+    txtTarget = { key, orig };
+    $('#text-input').value = txtOver[key] || orig;
+    $('#text-orig').textContent = 'Originale: ' + orig;
+    $('#text-msg').textContent = '';
+    $('#text-reset').hidden = !txtOver[key];
+    $('#text-save').disabled = false;
+    dText.showModal();
+    setTimeout(() => { $('#text-input').focus(); $('#text-input').select(); }, 30);
+  }
+  function saveText(reset) {
+    if (!txtTarget || !db || !isAdmin()) return;
+    const key = txtTarget.key, orig = txtTarget.orig, value = $('#text-input').value.trim();
+    if (!reset && !value) { $('#text-input').focus(); return; }
+    const del = reset || value === orig, before = txtOver[key] || orig;
+    $('#text-save').disabled = true;
+    db.collection('appTexts').doc('it').set({ t: { [key]: del ? firebase.firestore.FieldValue.delete() : value } }, { merge: true }).then(() => {
+      dText.close();
+      logAudit('texts', orig, [{ field: 'Testo', from: before, to: del ? orig : value }]);
+      toast(del ? 'Testo originale ripristinato' : 'Testo cambiato per tutti');
+    }).catch((err) => {
+      console.error(err);
+      $('#text-save').disabled = false;
+      $('#text-msg').textContent = 'Non salvato: Firebase non dà ancora il permesso (vanno aggiornate le regole)';
+    });
+  }
+  // in modalità modifica il tocco su un testo apre la modifica invece di premere il pulsante;
+  // i pulsanti solo icona (ingranaggio, filtri, ✕...) funzionano normalmente
+  document.addEventListener('mouseover', (e) => { if (!txtEditing || dText.open) return; const c = txtCandidate(e.target); setTxtHover(c ? c.el : null); }, true);
+  document.addEventListener('click', (e) => {
+    if (!txtEditing || dText.open || e.target.closest('.txt-bar')) return;
+    const c = txtCandidate(e.target); if (!c) return;
+    e.preventDefault(); e.stopPropagation();
+    openText(c);
+  }, true);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && txtEditing && !document.querySelector('dialog[open]')) setTxtEditing(false); });
+  $('#btn-texts').addEventListener('click', () => { closeDrops(); setTxtEditing(true); });
+  $('#txt-done').addEventListener('click', () => setTxtEditing(false));
+  $('#text-save').addEventListener('click', () => saveText(false));
+  $('#text-reset').addEventListener('click', () => saveText(true));
+  $('#text-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); saveText(false); } });
 
   // Installa come app (PC e telefono). Chrome/Edge/Android: finestra del browser;
   // iPhone/iPad e Safari: istruzioni, perché lì il pulsante automatico non esiste.
