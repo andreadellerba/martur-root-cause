@@ -1,0 +1,79 @@
+rules_version = '2';
+// Regole per la dashboard "Martur Italy · Problemi" (martur-root-cause).
+// Incollale in Firebase console > Firestore Database > Regole > Pubblica.
+//
+// Ruoli (campo "role" in /users/{uid}):
+//   admin = Amministratore: tutto, piu' gestione utenti e registro
+//   user  = Utente: gestisce i problemi
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function userPath(uid) { return /databases/$(database)/documents/users/$(uid); }
+    function setupPath() { return /databases/$(database)/documents/config/setup; }
+    function member() { return signedIn() && exists(userPath(request.auth.uid)); }
+    function me() { return get(userPath(request.auth.uid)).data; }
+    function isAdmin() { return member() && me().get('role', '') == 'admin'; }
+    function isOwner() { return signedIn() && exists(setupPath()) && get(setupPath()).data.owner == request.auth.uid; }
+
+    // Primo avvio: il primo che entra diventa Amministratore. Dopo, questo
+    // documento esiste e nessun altro puo' "autoabilitarsi".
+    match /config/setup {
+      allow read: if signedIn();
+      allow create: if signedIn()
+        && request.resource.data.owner == request.auth.uid
+        && existsAfter(userPath(request.auth.uid));
+      allow update, delete: if false;
+    }
+
+    match /users/{uid} {
+      // ognuno puo' leggere il proprio documento (serve al primo accesso, quando ancora non esiste)
+      allow read: if member() || (signedIn() && uid == request.auth.uid);
+      allow create: if isAdmin()
+        || (signedIn() && uid == request.auth.uid
+            && request.resource.data.role == 'admin'
+            && !exists(setupPath())
+            && getAfter(setupPath()).data.owner == request.auth.uid);
+      // L'Amministratore modifica gli utenti, ma non puo' togliersi da solo il ruolo.
+      // Eccezione: chi ha fatto il primo avvio puo' darsi il ruolo (utenti della versione precedente).
+      allow update: if (isAdmin() && !(uid == request.auth.uid && request.resource.data.role != 'admin'))
+        || (uid == request.auth.uid && isOwner()
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role'])
+            && request.resource.data.role == 'admin');
+      allow delete: if isAdmin() && uid != request.auth.uid;
+    }
+
+    // Dopo una password reimpostata: quale email usare per quel nome utente.
+    // Si legge prima dell'accesso (serve per entrare), la scrive solo l'Amministratore.
+    match /loginAliases/{name} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /problems/{id} {
+      allow read, delete: if member();
+      allow create, update: if member()
+        && request.resource.data.section in ['cpa', 'linea', 'resident', 'claim']
+        && request.resource.data.priority in ['verde', 'giallo', 'rosso']
+        && request.resource.data.nome is string
+        && request.resource.data.nome.size() > 0
+        && request.resource.data.nome.size() <= 200
+        && request.resource.data.apertura is string;
+    }
+
+    // Registro: lo scrivono tutti a proprio nome, lo legge solo l'Amministratore,
+    // nessuno lo modifica o lo cancella.
+    match /auditLog/{id} {
+      allow read: if isAdmin();
+      allow create: if member() && request.resource.data.username == me().username;
+      allow update, delete: if false;
+    }
+
+    // Testi cambiati con "Modifica testi" (ingranaggio): li leggono tutti gli
+    // utenti abilitati, li cambia solo l'Amministratore.
+    match /appTexts/{lang} {
+      allow read: if member();
+      allow write: if isAdmin();
+    }
+  }
+}
