@@ -176,10 +176,11 @@ body.locked .app{display:none !important}
 .topbar{position:sticky;top:0;z-index:30;margin:-14px 0 0;padding:10px 0}
 .topbar::before{content:"";position:absolute;inset:0 -20px;background-color:var(--bg);background-image:var(--bg-shade);background-attachment:fixed;z-index:-1}
 .cluster{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--edge);border-radius:18px;box-shadow:var(--shadow);padding:6px 14px;min-height:57px;color:var(--ink)}
-.clock{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:var(--w-head);letter-spacing:.19px;font-variant-numeric:tabular-nums;white-space:nowrap;flex:none;line-height:22.5px}
+.clock{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:var(--w-head);letter-spacing:.01em;text-shadow:0 1px 1px rgba(0,0,0,.14);font-variant-numeric:tabular-nums;white-space:nowrap;flex:none;line-height:22.5px}
 .clock .flag{width:34px;height:23px;border-radius:4px;box-shadow:0 0 0 1px rgba(0,0,0,.15),0 2px 4px rgba(0,0,0,.22);flex:none}
-.weather{display:inline-flex;align-items:center;gap:4px;font-weight:var(--w-text)}
-.weather svg{width:19px;height:19px;color:var(--gold)}
+.weather{display:inline-flex;align-items:center;gap:4px;font-weight:var(--w-head)}
+/* icona meteo come la dashboard: piu grande, tratto piu marcato e ombra leggera */
+.weather svg{width:21px;height:21px;color:var(--gold);stroke-width:2.4;filter:drop-shadow(0 1px 1px rgba(0,0,0,.2))}
 .weather:empty{display:none}
 .brand{flex:1 1 0;max-width:290px;min-width:80px;display:flex;align-items:center;justify-content:center}
 .logo{display:block;width:100%;height:auto;filter:drop-shadow(0 1px 1.5px rgba(0,0,0,.22))}
@@ -808,6 +809,7 @@ body:not(.booting) .boot{display:none}
   };
   const WX = {
     base: '<path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/>',
+    sunMedium: '<circle cx="12" cy="12" r="4"/><path d="M12 3v1"/><path d="M12 20v1"/><path d="M3 12h1"/><path d="M20 12h1"/><path d="m18.364 5.636-.707.707"/><path d="m6.343 17.657-.707.707"/><path d="m5.636 5.636.707.707"/><path d="m17.657 17.657.707.707"/>',
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
     moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
     cloud: '<path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>',
@@ -1488,7 +1490,6 @@ body:not(.booting) .boot{display:none}
     probe.remove();
     if (target.length < 3) return;
     const key = target.join(',');
-    if (key === '134,103,44') { logoImg.src = logoSrc; return; }
     if (logoCache[key]) { logoImg.src = logoCache[key]; return; }
     const src = new Image();
     src.onload = () => {
@@ -1872,7 +1873,8 @@ body:not(.booting) .boot{display:none}
   }
   function wxIcon(code, day) {
     const c = Number(code);
-    if (c === 0 || c === 1) return day ? WX.sun : WX.moon;
+    if (c === 0) return day ? WX.sun : WX.moon;
+    if (c === 1) return day ? WX.sunMedium : WX.moon;
     if (c === 2) return day ? WX.cloudSun : WX.cloudMoon;
     if (c === 3) return WX.cloud;
     if (c === 45 || c === 48) return WX.base + WX.fog;
